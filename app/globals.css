@@ -2203,11 +2203,20 @@ h3 {
   fill: #e9f1ff;
   opacity: 0.96;
 }
+.phase-region-liquid {
+  fill: #f3f6fb;
+  opacity: 0.9;
+}
 .phase-liquidus {
   fill: none;
   stroke: #8f9fbd;
   stroke-width: 2;
   stroke-dasharray: 5 4;
+}
+.phase-solidus {
+  fill: none;
+  stroke: #8f9fbd;
+  stroke-width: 2;
 }
 .phase-solvus {
   fill: none;
@@ -2295,6 +2304,34 @@ h3 {
 .phase-swatch.aging {
   background: #f5c47f;
   border-color: #e5a348;
+}
+.phase-line-legend {
+  display: grid;
+  gap: 5px;
+  padding-top: 2px;
+  color: #71819d;
+  font: 9px var(--mono);
+}
+.phase-line-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.phase-line-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid #8f9fbd;
+}
+.phase-line-swatch.liquid {
+  border-top-style: dashed;
+}
+.phase-line-swatch.solidus {
+  border-top-color: #8f9fbd;
+}
+.phase-line-swatch.solvus {
+  border-top-color: #315bd6;
+  border-top-width: 3px;
 }
 .phase-route-list {
   display: grid;
@@ -2451,6 +2488,84 @@ h3 {
   fill: #fff;
   stroke: #d9785b;
   stroke-width: 2;
+}
+.aging-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 5px;
+}
+.aging-chart-bg {
+  fill: #fbfdff;
+  stroke: #d7e2fa;
+  stroke-width: 1;
+}
+.aging-grid line {
+  stroke: #e5ecf9;
+  stroke-width: 1;
+}
+.aging-window {
+  fill: #f1a84b;
+  opacity: 0.2;
+}
+.aging-uncertainty {
+  fill: #9db6f2;
+  opacity: 0.24;
+}
+.aging-target {
+  stroke: #e08b42;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+.aging-marker {
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0.65;
+}
+.aging-marker.precipitate {
+  stroke: #5e79b6;
+}
+.aging-marker.peak {
+  stroke: #315bd6;
+  opacity: 0.85;
+}
+.aging-marker.overage {
+  stroke: #d9785b;
+}
+.aging-line {
+  fill: none;
+  stroke: #315bd6;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.aging-point {
+  fill: #fff;
+  stroke: #315bd6;
+  stroke-width: 2;
+}
+.aging-point.peak {
+  fill: #fff;
+  stroke: #e05d3a;
+  stroke-width: 2.5;
+}
+.aging-labels text {
+  fill: #7d8ba5;
+  font: 9px var(--mono);
+}
+.aging-labels .aging-target-label,
+.aging-labels .aging-window-label {
+  fill: #c77b36;
+}
+.aging-labels .aging-marker-label {
+  fill: #5e79b6;
+  font-size: 8px;
+}
+.aging-labels .aging-marker-label.peak {
+  fill: #315bd6;
+}
+.aging-labels .aging-marker-label.overage {
+  fill: #c56650;
 }
 .curve-labels text {
   fill: #7d8ba5;

@@ -45,6 +45,7 @@ type Candidate = {
     explanation: string;
   };
   phaseDiagram: PhaseDiagram;
+  conductivityAging: ConductivityAging;
   color: string;
 };
 
@@ -67,6 +68,20 @@ type CompositionEntry = {
 
 type PhasePoint = [number, number];
 
+type AgingPoint = [number, number];
+
+type ConductivityAging = {
+  points: AgingPoint[];
+  temperature: number;
+  measurementTemperature: number;
+  precipitationStart: number;
+  recommendedTime: [number, number];
+  peakTime: number;
+  overageStart: number;
+  confidence: 'illustrative' | 'low';
+  note: string;
+};
+
 type PhaseDiagram = {
   axisElement: string;
   xMax: number;
@@ -74,6 +89,7 @@ type PhaseDiagram = {
   yMax: number;
   solvus: PhasePoint[];
   liquidus: PhasePoint[];
+  solidus: PhasePoint[];
   targetX: number;
   solutionTemp: number;
   agingLow: number;
@@ -122,17 +138,45 @@ const phaseDiagram = (
   yMax: 1150,
   solvus,
   liquidus: [
-    [0, 1085],
-    [xMax * 0.25, 1095],
-    [xMax * 0.5, 1110],
-    [xMax * 0.75, 1125],
-    [xMax, 1140],
+    [0, 1084.9],
+    [xMax * 0.25, 1082.9],
+    [xMax * 0.5, 1080.4],
+    [xMax * 0.75, 1078.4],
+    [xMax, 1076.8],
+  ],
+  solidus: [
+    [0, 1084.9],
+    [xMax * 0.25, 1080.8],
+    [xMax * 0.5, 1078.2],
+    [xMax * 0.75, 1077.1],
+    [xMax, 1076.8],
   ],
   targetX,
   solutionTemp,
   agingLow,
   agingHigh,
   targetLabel: '目标成分',
+  confidence,
+  note,
+});
+
+const agingCurve = (
+  temperature: number,
+  points: AgingPoint[],
+  precipitationStart: number,
+  recommendedTime: [number, number],
+  peakTime: number,
+  overageStart: number,
+  confidence: ConductivityAging['confidence'],
+  note: string,
+): ConductivityAging => ({
+  points,
+  temperature,
+  measurementTemperature: 20,
+  precipitationStart,
+  recommendedTime,
+  peakTime,
+  overageStart,
   confidence,
   note,
 });
@@ -195,21 +239,40 @@ const candidates: Candidate[] = [
         'Cr 与 Zr 的析出驱动力集中在 440–465°C；细小弥散相钉扎位错，同时保留连续 Cu 基体以维持导电通道。',
     },
     phaseDiagram: phaseDiagram(
-      'Cr + Zr 等效',
+      'Cr/Zr 固定比例路径',
       0.8,
       0.4,
       980,
       440,
       465,
       [
-        [0.02, 350],
-        [0.12, 420],
-        [0.25, 520],
-        [0.45, 650],
-        [0.7, 820],
+        [0.02, 640],
+        [0.05, 760],
+        [0.12, 840],
+        [0.21, 900],
+        [0.31, 950],
+        [0.49, 1000],
+        [0.73, 1050],
       ],
       'illustrative',
-      '其他元素按等效溶质近似；相界仅用于演示路线筛选。',
+      'Cr/Zr 以固定比例路径投影，非 wt.% 简单相加；相界仅用于演示路线筛选。',
+    ),
+    conductivityAging: agingCurve(
+      450,
+      [
+        [0, 42.1],
+        [0.5, 44.6],
+        [1, 47.4],
+        [2, 48.6],
+        [4, 48.9],
+        [8, 48.5],
+      ],
+      0.5,
+      [1.5, 2.5],
+      2,
+      4,
+      'illustrative',
+      '示意：析出回收使导电率上升并在峰值时效附近趋于平台；过时效段不代表普遍下降。',
     ),
     color: 'copper',
   },
@@ -279,21 +342,40 @@ const candidates: Candidate[] = [
         'Ni₂Si 的析出窗口更宽，可在强度提升后保留较高塑性；Zr 用于抑制析出相粗化，降低长期应力松弛。',
     },
     phaseDiagram: phaseDiagram(
-      'Ni + Si 等效',
+      'Ni/Si 固定比例路径',
       3.0,
       2.2,
       930,
       380,
       420,
       [
-        [0.2, 330],
-        [0.7, 390],
-        [1.3, 470],
-        [2.0, 560],
-        [2.7, 680],
+        [0.15, 650],
+        [0.35, 720],
+        [0.7, 790],
+        [1.2, 850],
+        [1.8, 900],
+        [2.3, 925],
+        [2.8, 970],
       ],
       'illustrative',
-      'Ni-Si 以等效溶质投影表示，需用多元数据库复算。',
+      'Ni-Si 以固定比例路径投影，需用多元数据库复算多个两相/三相区。',
+    ),
+    conductivityAging: agingCurve(
+      400,
+      [
+        [0, 43.8],
+        [1, 46.0],
+        [2, 48.9],
+        [4, 51.2],
+        [6, 51.5],
+        [8, 51.3],
+      ],
+      1,
+      [3, 5],
+      4,
+      6,
+      'illustrative',
+      '示意：Ni-Si 析出动力学较慢，导电率在较长时效时间后达到平台。',
     ),
     color: 'teal',
   },
@@ -354,21 +436,41 @@ const candidates: Candidate[] = [
         '高缺陷表层提高形核密度，芯部保留较低缺陷以维持导电率；该方案的性能增益来自组织梯度而非单纯提高合金化量。',
     },
     phaseDiagram: phaseDiagram(
-      'Cr + Zr 等效',
+      'Cr/Zr 固定比例路径',
       0.9,
       0.5,
       970,
       430,
       460,
       [
-        [0.03, 340],
-        [0.12, 410],
-        [0.3, 500],
-        [0.52, 610],
-        [0.8, 780],
+        [0.02, 620],
+        [0.06, 760],
+        [0.12, 840],
+        [0.21, 900],
+        [0.31, 950],
+        [0.49, 1000],
+        [0.73, 1050],
+        [0.85, 1065],
       ],
       'illustrative',
-      '相图只表示基体/析出相趋势，梯度组织效应需结合组织模型。',
+      'Cr/Zr 以固定比例路径投影；相图只表示基体/析出相趋势，梯度组织效应需结合组织模型。',
+    ),
+    conductivityAging: agingCurve(
+      450,
+      [
+        [0, 41.4],
+        [0.5, 43.0],
+        [1, 45.3],
+        [2, 46.8],
+        [4, 47.0],
+        [8, 46.9],
+      ],
+      0.5,
+      [1.5, 2.5],
+      2,
+      4,
+      'illustrative',
+      '示意：梯度缺陷与析出共同影响电阻率，曲线只表示基体导电率趋势。',
     ),
     color: 'violet',
   },
@@ -432,21 +534,40 @@ const candidates: Candidate[] = [
         '模型假设 Co–Si 纳米析出相提高粗化温度，Ti 作为异质形核核心；该跨体系组合尚需 DFT / 相场和相组成实验复核。',
     },
     phaseDiagram: phaseDiagram(
-      'Co + Si 等效',
+      'Co/Si 固定比例路径',
       1.4,
       0.9,
       960,
       450,
       500,
       [
-        [0.05, 360],
-        [0.25, 440],
-        [0.55, 540],
-        [0.9, 660],
-        [1.3, 800],
+        [0.05, 620],
+        [0.15, 720],
+        [0.3, 800],
+        [0.55, 870],
+        [0.9, 930],
+        [1.2, 980],
+        [1.35, 1010],
       ],
       'low',
       '跨体系迁移路线：相界和析出相均为低置信度示意，需 DFT / 相场复核。',
+    ),
+    conductivityAging: agingCurve(
+      470,
+      [
+        [0, 40.8],
+        [0.5, 42.9],
+        [1, 45.6],
+        [2, 47.4],
+        [4, 47.6],
+        [8, 47.4],
+      ],
+      0.5,
+      [1.5, 3],
+      2,
+      4,
+      'low',
+      '低置信度示意：跨体系析出相的形成与导电率恢复需由 DFT / 相场及实验共同校准。',
     ),
     color: 'blue',
   },
@@ -507,21 +628,41 @@ const candidates: Candidate[] = [
         'Mg-Si 析出消耗部分固溶原子，降低电子散射并保留较高导电率；物理筛选显示其强度不足以满足当前目标，适合作为成本对照路线。',
     },
     phaseDiagram: phaseDiagram(
-      'Mg + Si 等效',
+      'Mg/Si 固定比例路径',
       0.9,
       0.4,
       900,
       360,
       400,
       [
-        [0.03, 320],
-        [0.12, 360],
-        [0.28, 430],
-        [0.48, 530],
-        [0.8, 690],
+        [0.03, 520],
+        [0.08, 640],
+        [0.15, 730],
+        [0.28, 810],
+        [0.45, 880],
+        [0.7, 950],
+        [0.85, 990],
       ],
       'illustrative',
-      '低成本路线的相区用于展示析出趋势，连续挤压后的组织需实测校准。',
+      'Mg/Si 以固定比例路径投影；相区用于展示析出趋势，连续挤压后的组织需实测校准。',
+    ),
+    conductivityAging: agingCurve(
+      380,
+      [
+        [0, 45.1],
+        [0.5, 47.0],
+        [1, 49.6],
+        [2, 52.4],
+        [4, 53.5],
+        [6, 53.6],
+        [8, 53.6],
+      ],
+      1,
+      [3, 5],
+      4,
+      6,
+      'illustrative',
+      '示意：低温时效下导电率逐步恢复并趋于平台，适合作为成本优先对照路线。',
     ),
     color: 'cost',
   },
@@ -582,7 +723,11 @@ export default function Home() {
   const solvusRegion = pointsToSvg([
     ...diagram.solvus,
     [diagram.xMax, diagram.yMin],
-    [0, diagram.yMin],
+    [diagram.solvus[0][0], diagram.yMin],
+  ]);
+  const solidificationRegion = pointsToSvg([
+    ...diagram.liquidus,
+    ...diagram.solidus.slice().reverse(),
   ]);
   const ageBandY = scaleY(diagram.agingHigh);
   const ageBandHeight = Math.max(5, scaleY(diagram.agingLow) - ageBandY);
@@ -651,10 +796,78 @@ export default function Home() {
     x: stressX(fractureStrain),
     y: stressY(fractureStress),
   };
-  const conductivityMax = Math.max(
-    60,
-    Math.ceil((conductivityTarget + 5) / 5) * 5,
+  const aging = selected.conductivityAging;
+  const agingChart = {
+    width: 420,
+    height: 190,
+    left: 38,
+    right: 16,
+    top: 24,
+    bottom: 36,
+  };
+  const agingTimes = aging.points.map(([time]) => time);
+  const agingValues = aging.points.map(([, value]) => value);
+  const agingValueMin = agingValues.reduce(
+    (minimum, value) => Math.min(minimum, value),
+    conductivityTarget,
   );
+  const agingValueMax = agingValues.reduce(
+    (maximum, value) => Math.max(maximum, value),
+    conductivityTarget,
+  );
+  const agingTimeMaxValue = agingTimes.reduce(
+    (maximum, time) => Math.max(maximum, time),
+    aging.overageStart,
+  );
+  const agingTimeMax = Math.max(8, Math.ceil(agingTimeMaxValue / 2) * 2);
+  const agingYMin = Math.max(0, Math.floor((agingValueMin - 2) / 5) * 5);
+  const agingYMax = Math.max(
+    agingYMin + 10,
+    Math.ceil((agingValueMax + 2) / 5) * 5,
+  );
+  const agingScaleX = (time: number) =>
+    agingChart.left +
+    (time / agingTimeMax) *
+      (agingChart.width - agingChart.left - agingChart.right);
+  const agingScaleY = (value: number) =>
+    agingChart.height -
+    agingChart.bottom -
+    ((value - agingYMin) / (agingYMax - agingYMin)) *
+      (agingChart.height - agingChart.top - agingChart.bottom);
+  const agingUncertaintyWidth = aging.confidence === 'low' ? 0.8 : 0.45;
+  const agingPath = aging.points
+    .map(
+      ([time, value], index) =>
+        `${index === 0 ? 'M' : 'L'} ${agingScaleX(time).toFixed(1)} ${agingScaleY(value).toFixed(1)}`,
+    )
+    .join(' ');
+  const agingUncertainty = [
+    ...aging.points.map(
+      ([time, value]) =>
+        `${agingScaleX(time).toFixed(1)},${agingScaleY(value + agingUncertaintyWidth).toFixed(1)}`,
+    ),
+    ...aging.points
+      .slice()
+      .reverse()
+      .map(
+        ([time, value]) =>
+          `${agingScaleX(time).toFixed(1)},${agingScaleY(value - agingUncertaintyWidth).toFixed(1)}`,
+      ),
+  ].join(' ');
+  const agingWindowX = agingScaleX(aging.recommendedTime[0]);
+  const agingWindowWidth = Math.max(
+    4,
+    agingScaleX(aging.recommendedTime[1]) - agingWindowX,
+  );
+  const agingPeakPoint = aging.points.reduce((closest, point) =>
+    Math.abs(point[0] - aging.peakTime) < Math.abs(closest[0] - aging.peakTime)
+      ? point
+      : closest,
+  );
+  const agingTargetY = agingScaleY(conductivityTarget);
+  const agingPlotWidth = agingChart.width - agingChart.left - agingChart.right;
+  const agingPlotHeight =
+    agingChart.height - agingChart.top - agingChart.bottom;
 
   function handleGenerate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1036,9 +1249,11 @@ export default function Home() {
                   <div>
                     <p className="eyebrow">PHASE MAP / ILLUSTRATIVE</p>
                     <h4 id="phase-diagram-heading">
-                      示例伪二元相图 · {selected.id}
+                      Cu-rich 固定比例相图示意 · {selected.id}
                     </h4>
-                    <span>Cu-rich 伪二元截面 · {diagram.axisElement}</span>
+                    <span>
+                      Cu-rich 固定比例截面（示意） · {diagram.axisElement}
+                    </span>
                   </div>
                   <span
                     className={`phase-confidence ${diagram.confidence === 'low' ? 'low' : ''}`}
@@ -1054,7 +1269,7 @@ export default function Home() {
                     <svg
                       viewBox={`0 0 ${chart.width} ${chart.height}`}
                       role="img"
-                      aria-label={`示例相图，横轴为${diagram.axisElement}，纵轴为温度，标出目标成分与时效窗口`}
+                      aria-label={`Cu-rich 固定比例截面示意相图，横轴为${diagram.axisElement}路径参数，纵轴为温度，标出目标成分与时效窗口`}
                     >
                       <rect
                         x={chart.left}
@@ -1093,9 +1308,17 @@ export default function Home() {
                         points={solvusRegion}
                         className="phase-region-precipitate"
                       />
+                      <polygon
+                        points={solidificationRegion}
+                        className="phase-region-liquid"
+                      />
                       <polyline
                         points={pointsToSvg(diagram.liquidus)}
                         className="phase-liquidus"
+                      />
+                      <polyline
+                        points={pointsToSvg(diagram.solidus)}
+                        className="phase-solidus"
                       />
                       <polyline
                         points={pointsToSvg(diagram.solvus)}
@@ -1178,7 +1401,7 @@ export default function Home() {
                           y={chart.height - 5}
                           textAnchor="middle"
                         >
-                          等效溶质含量 / wt.%
+                          固定比例路径参数 / 相对含量
                         </text>
                         <text
                           x="14"
@@ -1190,13 +1413,16 @@ export default function Home() {
                         </text>
                       </g>
                       <g className="phase-region-labels">
-                        <text x={scaleX(diagram.xMax * 0.58)} y={scaleY(920)}>
-                          L + α（示意）
+                        <text x={scaleX(diagram.xMax * 0.36)} y={scaleY(1100)}>
+                          L（液相）
                         </text>
-                        <text x={scaleX(diagram.xMax * 0.64)} y={scaleY(570)}>
+                        <text x={scaleX(diagram.xMax * 0.55)} y={scaleY(1079)}>
+                          L + α（背景示意）
+                        </text>
+                        <text x={scaleX(diagram.xMax * 0.16)} y={scaleY(900)}>
                           α-Cu（FCC）
                         </text>
-                        <text x={scaleX(diagram.xMax * 0.46)} y={scaleY(390)}>
+                        <text x={scaleX(diagram.xMax * 0.56)} y={scaleY(560)}>
                           α-Cu + 析出相
                         </text>
                       </g>
@@ -1221,7 +1447,18 @@ export default function Home() {
                           }
                           textAnchor="end"
                         >
-                          液相线（示意）
+                          凝固边界（背景示意）
+                        </text>
+                        <text
+                          x={chart.width - chart.right - 4}
+                          y={
+                            scaleY(
+                              diagram.solidus[diagram.solidus.length - 1][1],
+                            ) + 14
+                          }
+                          textAnchor="end"
+                        >
+                          固相线（背景示意）
                         </text>
                         <text x={chart.left + 8} y={ageBandY - 5}>
                           时效 {diagram.agingLow}–{diagram.agingHigh}°C
@@ -1230,7 +1467,7 @@ export default function Home() {
                           x={chart.left + 8}
                           y={scaleY(diagram.solutionTemp) - 6}
                         >
-                          固溶 {diagram.solutionTemp}°C
+                          工艺固溶温度（示意） {diagram.solutionTemp}°C
                         </text>
                         <text x={targetPoint.x + 9} y={targetPoint.y - 8}>
                           目标点
@@ -1251,17 +1488,31 @@ export default function Home() {
                       <i className="phase-swatch aging" />
                       <span>析出 / 时效窗口</span>
                     </div>
+                    <div className="phase-line-legend">
+                      <span>
+                        <i className="phase-line-swatch liquid" />
+                        液相线（背景示意）
+                      </span>
+                      <span>
+                        <i className="phase-line-swatch solidus" />
+                        固相线（背景示意）
+                      </span>
+                      <span>
+                        <i className="phase-line-swatch solvus" />
+                        溶解度线
+                      </span>
+                    </div>
                     <div className="phase-route-list">
                       <div>
                         <b>目标成分</b>
                         <span>
                           {diagram.axisElement}{' '}
                           {diagram.targetX.toFixed(diagram.targetX < 1 ? 2 : 1)}{' '}
-                          wt.%
+                          路径参数
                         </span>
                       </div>
                       <div>
-                        <b>固溶温度</b>
+                        <b>工艺固溶温度</b>
                         <span>{diagram.solutionTemp}°C</span>
                       </div>
                       <div>
@@ -1275,7 +1526,11 @@ export default function Home() {
                         <span>{selected.physics.driving}</span>
                       </div>
                     </div>
-                    <p className="phase-diagram-note">{diagram.note}</p>
+                    <p className="phase-diagram-note">
+                      {diagram.note} 该图使用 UI
+                      路径参数作投影；凝固边界为背景示意，不代表数据库计算，工艺固溶温度也不作为“完全进入单相区”的判据。正式设计需固定三元截面、调用
+                      CALPHAD 数据库，并以实验校准。
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1684,43 +1939,175 @@ export default function Home() {
                   <div className="visual-card conductivity-visual">
                     <div className="visual-heading">
                       <span>
-                        <Zap size={15} /> 导电率对比
+                        <Zap size={15} /> 导电率–时效时间曲线
                       </span>
-                      <small>% IACS</small>
+                      <small>{aging.measurementTemperature}°C / % IACS</small>
                     </div>
-                    <div
-                      className="conductivity-bars"
+                    <svg
+                      className="aging-chart"
+                      viewBox={`0 0 ${agingChart.width} ${agingChart.height}`}
                       role="img"
-                      aria-label="五套候选方案导电率对比"
+                      aria-label={`${selected.name} 在 ${aging.temperature}°C 时效过程中的导电率示意曲线`}
                     >
-                      {candidates.map((candidate) => (
-                        <div
-                          className={`conductivity-row ${candidate.id === selected.id ? 'active' : ''}`}
-                          key={candidate.id}
-                        >
-                          <span>{candidate.id}</span>
-                          <div className="conductivity-track">
-                            <i
-                              style={{
-                                width: `${Math.min(100, (candidate.conductivity / conductivityMax) * 100)}%`,
-                              }}
-                            />
-                          </div>
-                          <b>{candidate.conductivity}</b>
-                        </div>
+                      <rect
+                        x={agingChart.left}
+                        y={agingChart.top}
+                        width={agingPlotWidth}
+                        height={agingPlotHeight}
+                        className="aging-chart-bg"
+                      />
+                      <g className="aging-grid">
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <line
+                            key={`aging-y-grid-${index}`}
+                            x1={agingChart.left}
+                            x2={agingChart.width - agingChart.right}
+                            y1={agingChart.top + (index * agingPlotHeight) / 4}
+                            y2={agingChart.top + (index * agingPlotHeight) / 4}
+                          />
+                        ))}
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <line
+                            key={`aging-x-grid-${index}`}
+                            x1={agingChart.left + (index * agingPlotWidth) / 4}
+                            x2={agingChart.left + (index * agingPlotWidth) / 4}
+                            y1={agingChart.top}
+                            y2={agingChart.height - agingChart.bottom}
+                          />
+                        ))}
+                      </g>
+                      <rect
+                        x={agingWindowX}
+                        y={agingChart.top}
+                        width={agingWindowWidth}
+                        height={agingPlotHeight}
+                        className="aging-window"
+                      />
+                      <polygon
+                        points={agingUncertainty}
+                        className="aging-uncertainty"
+                      />
+                      <line
+                        className="aging-target"
+                        x1={agingChart.left}
+                        x2={agingChart.width - agingChart.right}
+                        y1={agingTargetY}
+                        y2={agingTargetY}
+                      />
+                      <line
+                        className="aging-marker precipitate"
+                        x1={agingScaleX(aging.precipitationStart)}
+                        x2={agingScaleX(aging.precipitationStart)}
+                        y1={agingChart.top}
+                        y2={agingChart.height - agingChart.bottom}
+                      />
+                      <line
+                        className="aging-marker peak"
+                        x1={agingScaleX(aging.peakTime)}
+                        x2={agingScaleX(aging.peakTime)}
+                        y1={agingChart.top}
+                        y2={agingChart.height - agingChart.bottom}
+                      />
+                      <line
+                        className="aging-marker overage"
+                        x1={agingScaleX(aging.overageStart)}
+                        x2={agingScaleX(aging.overageStart)}
+                        y1={agingChart.top}
+                        y2={agingChart.height - agingChart.bottom}
+                      />
+                      <path d={agingPath} className="aging-line" />
+                      {aging.points.map(([time, value], index) => (
+                        <circle
+                          key={`aging-point-${index}`}
+                          cx={agingScaleX(time)}
+                          cy={agingScaleY(value)}
+                          r={time === agingPeakPoint[0] ? 4 : 3}
+                          className={`aging-point ${time === agingPeakPoint[0] ? 'peak' : ''}`}
+                        />
                       ))}
-                      <div
-                        className="conductivity-target"
-                        style={{
-                          left: `${Math.min(100, (conductivityTarget / conductivityMax) * 100)}%`,
-                        }}
-                      >
-                        <span>目标 {conductivityTarget}</span>
-                      </div>
-                    </div>
+                      <g className="aging-labels">
+                        <text
+                          x={agingChart.left - 5}
+                          y={agingChart.top - 8}
+                          textAnchor="end"
+                        >
+                          % IACS
+                        </text>
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <text
+                            key={`aging-y-label-${index}`}
+                            x={agingChart.left - 6}
+                            y={
+                              agingChart.top + (index * agingPlotHeight) / 4 + 3
+                            }
+                            textAnchor="end"
+                          >
+                            {Math.round(
+                              agingYMax - ((agingYMax - agingYMin) * index) / 4,
+                            )}
+                          </text>
+                        ))}
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <text
+                            key={`aging-x-label-${index}`}
+                            x={agingChart.left + (index * agingPlotWidth) / 4}
+                            y={agingChart.height - agingChart.bottom + 16}
+                            textAnchor="middle"
+                          >
+                            {Math.round((agingTimeMax * index) / 4)}
+                          </text>
+                        ))}
+                        <text
+                          x={agingChart.width / 2}
+                          y={agingChart.height - 5}
+                          textAnchor="middle"
+                        >
+                          时效时间 / h
+                        </text>
+                        <text
+                          x={agingChart.width - agingChart.right - 3}
+                          y={agingTargetY - 5}
+                          textAnchor="end"
+                          className="aging-target-label"
+                        >
+                          目标 {conductivityTarget}
+                        </text>
+                        <text
+                          x={agingScaleX(aging.precipitationStart) + 4}
+                          y={agingChart.top + 11}
+                          className="aging-marker-label"
+                        >
+                          析出开始
+                        </text>
+                        <text
+                          x={agingScaleX(aging.peakTime) + 4}
+                          y={agingChart.top + 24}
+                          className="aging-marker-label peak"
+                        >
+                          峰值
+                        </text>
+                        <text
+                          x={agingScaleX(aging.overageStart) + 4}
+                          y={agingChart.top + 37}
+                          className="aging-marker-label overage"
+                        >
+                          过时效起点
+                        </text>
+                        <text
+                          x={agingWindowX + agingWindowWidth / 2}
+                          y={agingChart.height - agingChart.bottom - 5}
+                          textAnchor="middle"
+                          className="aging-window-label"
+                        >
+                          推荐窗口
+                        </text>
+                      </g>
+                    </svg>
                     <p className="visual-caption">
-                      当前方案 {selected.conductivity}% IACS ·
-                      蓝色标记为目标下限 · 其余为候选对照
+                      {selected.name}：{aging.temperature}°C
+                      时效；导电率随析出消耗固溶原子而恢复。阴影为预测不确定度，曲线、目标线与推荐窗口均为示意，需用{' '}
+                      {aging.measurementTemperature}°C 实测数据校准。
+                      {aging.note}
                     </p>
                   </div>
                 </div>
