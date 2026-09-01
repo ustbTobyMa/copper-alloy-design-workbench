@@ -554,8 +554,12 @@ h3 { color:#1c3d91; font:700 21px/1.3 var(--serif); }
 .curve-grid line { stroke:#e5ecf9; stroke-width:1; }
 .curve-axis { stroke:#7083a8; stroke-width:1.1; }
 .curve-target { stroke:#f0a252; stroke-width:1.2; stroke-dasharray:4 3; }
+.curve-proof-guide { stroke:#6b83c4; stroke-width:1; stroke-dasharray:2 3; opacity:.65; }
+.curve-fracture-guide { stroke:#d9785b; stroke-width:1; stroke-dasharray:3 3; opacity:.7; }
 .stress-line { fill:none; stroke:#315bd6; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.stress-proof { fill:#fff; stroke:#526da9; stroke-width:2; }
 .stress-peak { fill:#fff; stroke:#e05d3a; stroke-width:2.5; }
+.stress-fracture { fill:#fff; stroke:#d9785b; stroke-width:2; }
 .curve-labels text { fill:#7d8ba5; font:9px var(--mono); }
 .curve-labels text:nth-child(3) { fill:#d68a3e; }
 .visual-caption { margin-top:6px; color:#7d8ca7; font-size:10px; line-height:1.45; }
