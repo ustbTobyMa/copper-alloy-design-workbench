@@ -1347,6 +1347,44 @@ body {
   color: #71809b;
   font-size: 11px;
 }
+.topbar-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+.brand {
+  flex-shrink: 0;
+}
+.brand-copy {
+  min-width: 0;
+}
+.partner-lockup {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding-left: 20px;
+  border-left: 1px solid #d7e2ff;
+  white-space: nowrap;
+}
+.partner-logo {
+  display: block;
+  width: auto;
+  object-fit: contain;
+  user-select: none;
+}
+.partner-logo-boway {
+  height: 20px;
+}
+.partner-logo-dp {
+  height: 15px;
+  opacity: 0.92;
+}
+.partner-separator {
+  color: #96a4bf;
+  font: 600 13px var(--mono);
+}
 .topbar-context {
   color: #687792;
   font-family: var(--mono);
@@ -2677,5 +2715,87 @@ h3 {
   }
   .local-response {
     white-space: normal;
+  }
+}
+
+@media (max-width: 780px) {
+  .topbar {
+    gap: 14px;
+  }
+  .topbar-brand-group {
+    gap: 12px;
+  }
+  .brand {
+    min-width: auto;
+  }
+  .brand-copy {
+    display: none;
+  }
+  .partner-lockup {
+    gap: 7px;
+    padding-left: 12px;
+  }
+  .partner-logo-boway {
+    height: 17px;
+  }
+  .partner-logo-dp {
+    height: 13px;
+  }
+  .topbar-actions {
+    min-width: auto;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 500px) {
+  .topbar {
+    padding-inline: 14px;
+  }
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+  .partner-lockup {
+    gap: 5px;
+    padding-left: 9px;
+  }
+  .partner-logo-boway {
+    height: 14px;
+    max-width: 110px;
+  }
+  .partner-logo-dp {
+    height: 11px;
+    max-width: 112px;
+  }
+  .partner-separator {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar {
+    gap: 9px;
+    padding-inline: 12px;
+  }
+  .topbar-brand-group {
+    gap: 8px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+  .partner-lockup {
+    gap: 4px;
+    padding-left: 7px;
+  }
+  .partner-logo-boway {
+    max-width: 82px;
+  }
+  .partner-logo-dp {
+    max-width: 84px;
+  }
+  .topbar-actions .icon-button {
+    display: none;
   }
 }

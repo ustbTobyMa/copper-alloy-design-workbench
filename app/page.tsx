@@ -892,15 +892,37 @@ export default function Home() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="回到铜合金工作台首页">
-          <span className="brand-mark">
-            <span>Cu</span>
-          </span>
-          <span>
-            <strong>COPPER / LAB</strong>
-            <small>铜合金设计工作台</small>
-          </span>
-        </a>
+        <div className="topbar-brand-group">
+          <a className="brand" href="#top" aria-label="回到铜合金工作台首页">
+            <span className="brand-mark">
+              <span>Cu</span>
+            </span>
+            <span className="brand-copy">
+              <strong>COPPER / LAB</strong>
+              <small>铜合金设计工作台</small>
+            </span>
+          </a>
+          <div
+            className="partner-lockup"
+            aria-label="博威合金与深势科技联合研发"
+          >
+            <img
+              className="partner-logo partner-logo-boway"
+              src="./brands/boway-alloy.png"
+              alt="博威合金"
+              draggable="false"
+            />
+            <span className="partner-separator" aria-hidden="true">
+              ×
+            </span>
+            <img
+              className="partner-logo partner-logo-dp"
+              src="./brands/dp-technology.png"
+              alt="深势科技"
+              draggable="false"
+            />
+          </div>
+        </div>
         <div className="topbar-context">
           <span className="context-dot" />
           <span>本地演示模型</span>
