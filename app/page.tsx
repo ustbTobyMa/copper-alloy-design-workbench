@@ -1447,7 +1447,7 @@ export default function Home() {
                           }
                           textAnchor="end"
                         >
-                          凝固边界（背景示意）
+                          液相线（背景示意）
                         </text>
                         <text
                           x={chart.width - chart.right - 4}
