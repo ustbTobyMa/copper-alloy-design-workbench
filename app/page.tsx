@@ -583,7 +583,7 @@ const candidates: Candidate[] = [
     cost: '0.96×',
     novelty: '★★★',
     risk: '低',
-    route: '连续挤压 → 70% 冷轧 → 380°C / 2h 时效',
+    route: '连续挤压 → 70% 冷轧 → 380°C / 4h 时效',
     composition: [
       compositionEntry('Mg', '0.10', '0.28', '0.50', 'Mg₂Si 析出', [
         localResponse(
@@ -616,7 +616,7 @@ const candidates: Candidate[] = [
     processSteps: [
       { label: '连续挤压', detail: '近净成形，降低制造成本' },
       { label: '冷轧 70%', detail: '获得均匀加工硬化' },
-      { label: '低温时效', detail: '380°C / 2h，平衡塑性与强度' },
+      { label: '低温时效', detail: '380°C / 4h，平衡塑性与强度' },
     ],
     physics: {
       phase: 'FCC-Cu',
@@ -1941,7 +1941,10 @@ export default function Home() {
                       <span>
                         <Zap size={15} /> 导电率–时效时间曲线
                       </span>
-                      <small>{aging.measurementTemperature}°C / % IACS</small>
+                      <small>
+                        {aging.temperature}°C 时效 ·{' '}
+                        {aging.measurementTemperature}°C 测量 · % IACS
+                      </small>
                     </div>
                     <svg
                       className="aging-chart"
