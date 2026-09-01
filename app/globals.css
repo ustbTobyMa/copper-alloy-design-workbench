@@ -360,6 +360,8 @@ h3 { color:#1c3d91; font:700 21px/1.3 var(--serif); }
 .candidate-index.copper { background:linear-gradient(145deg,#214bd3,#5f80e9); }
 .candidate-index.teal { background:linear-gradient(145deg,#2a74dd,#54a3ef); }
 .candidate-index.violet { background:linear-gradient(145deg,#5f49ca,#9a7aee); }
+.candidate-index.blue { background:linear-gradient(145deg,#1768c9,#4e9df1); }
+.candidate-index.cost { background:linear-gradient(145deg,#168a7a,#48b59b); }
 .candidate-body strong { color:#233a68; font-size:13px; }
 .candidate-body small { color:#75839a; font-size:11px; }
 .candidate-tags em { padding:4px 6px; border-radius:5px; color:#526783; background:#edf2ff; font:10px var(--mono); }
@@ -443,4 +445,47 @@ h3 { color:#1c3d91; font:700 21px/1.3 var(--serif); }
 @media (max-width: 500px) {
   .route-grid, .physics-metrics { grid-template-columns:1fr; }
   .candidate-metric { display:none; }
+}
+
+/* Explainability emphasis: make the physics evidence read like a model trace. */
+.physics-card {
+  margin-top: 16px;
+  border-top: 4px solid #315bd6;
+  background: linear-gradient(112deg, #eaf1ff 0%, #f7f9ff 52%, #fff 100%);
+  box-shadow: 0 14px 30px rgba(49, 91, 214, .12);
+}
+.physics-card .card-heading h3 { font-size: 23px; }
+.physics-card .card-description { max-width: 900px; font-size: 13px; }
+.explain-factor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 11px;
+  padding: 10px;
+  border: 1px solid #c9d8ff;
+  border-radius: 8px;
+  background: rgba(255,255,255,.72);
+}
+.explain-factor-grid div { min-width: 0; padding: 2px 8px; border-left: 2px solid #9bb5f8; }
+.explain-factor-grid strong { display: block; color: #254da8; font: 700 11px var(--mono); }
+.explain-factor-grid span { display: block; margin-top: 3px; color: #62749c; font-size: 11px; line-height: 1.45; }
+.candidate-body .candidate-spec {
+  display: block;
+  overflow: hidden;
+  margin-top: 6px;
+  color: #60749d;
+  font-size: 10px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.candidate-body .candidate-spec b { color: #315bd6; font: 700 10px var(--mono); }
+.candidate-tags .pass-tag { color: #16785f; background: #e4f7ef; }
+.candidate-tags .hold-tag { color: #9a6a1e; background: #fff3d9; }
+
+@media (max-width: 780px) {
+  .explain-factor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 500px) {
+  .explain-factor-grid { grid-template-columns: 1fr; }
 }
