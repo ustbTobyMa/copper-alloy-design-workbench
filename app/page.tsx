@@ -1150,6 +1150,76 @@ export default function Home() {
                 <span>{generated ? '约束匹配完成' : '等待约束匹配'}</span>
               </div>
             </div>
+            <section
+              className="candidate-section"
+              aria-labelledby="candidate-heading"
+            >
+              <div className="section-title-row">
+                <div>
+                  <p className="eyebrow">CANDIDATE SET</p>
+                  <h3 id="candidate-heading">
+                    候选路线选择 <span>5 套</span>
+                  </h3>
+                </div>
+                <span className="candidate-order-note">
+                  先选路线，再查看对应的成分、工艺与物理证据
+                </span>
+              </div>
+              <div className="candidate-list">
+                {candidates.map((candidate) => {
+                  const pass =
+                    candidate.strength >= strengthTarget &&
+                    candidate.conductivity >= conductivityTarget &&
+                    candidate.elongation >= elongationTarget &&
+                    candidate.stressRelaxation <= relaxationLimit &&
+                    costOf(candidate.cost) <= costLimit;
+                  return (
+                    <button
+                      key={candidate.id}
+                      type="button"
+                      className={`candidate-card panel ${selectedId === candidate.id ? 'selected' : ''}`}
+                      onClick={() => setSelectedId(candidate.id)}
+                    >
+                      <span className={`candidate-index ${candidate.color}`}>
+                        {candidate.id.replace('CU-', '')}
+                      </span>
+                      <span className="candidate-body">
+                        <strong>{candidate.name}</strong>
+                        <small>{candidate.summary}</small>
+                        <span className="candidate-spec">
+                          <b>成分</b>{' '}
+                          {candidate.composition
+                            .map((row) => `${row.element} ${row.target}`)
+                            .join(' · ')}
+                        </span>
+                        <span className="candidate-spec">
+                          <b>工艺</b>{' '}
+                          {candidate.processSteps
+                            .map((step) => step.label)
+                            .join(' → ')}
+                        </span>
+                        <span className="candidate-tags">
+                          <em>{candidate.novelty} 新颖性</em>
+                          <em>{candidate.risk}风险</em>
+                          <em>{candidate.cost}</em>
+                          <em className={pass ? 'pass-tag' : 'hold-tag'}>
+                            {pass ? '约束通过' : '待验证'}
+                          </em>
+                        </span>
+                      </span>
+                      <span className="candidate-metric">
+                        <strong>{candidate.strength}</strong>
+                        <small>MPa</small>
+                        <b>{candidate.conductivity}%</b>
+                        <small>IACS</small>
+                        <i>A {candidate.elongation}%</i>
+                      </span>
+                      <ChevronRight size={18} className="candidate-arrow" />
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
             <article className="recommendation-card panel">
               <div className="recommendation-topline">
                 <span className="recommendation-label">
@@ -1576,77 +1646,6 @@ export default function Home() {
                   {selected.physics.explanation}{' '}
                   所有数值为演示接口，可替换为你们的 CALPHAD、DFT 和实验数据库。
                 </span>
-              </div>
-            </section>
-
-            <section
-              className="candidate-section"
-              aria-labelledby="candidate-heading"
-            >
-              <div className="section-title-row">
-                <div>
-                  <p className="eyebrow">CANDIDATE SET</p>
-                  <h3 id="candidate-heading">
-                    候选方案 <span>05</span>
-                  </h3>
-                </div>
-                <span className="candidate-order-note">
-                  每个方案拥有独立成分与工艺 · 点击切换物理证据
-                </span>
-              </div>
-              <div className="candidate-list">
-                {candidates.map((candidate) => {
-                  const pass =
-                    candidate.strength >= strengthTarget &&
-                    candidate.conductivity >= conductivityTarget &&
-                    candidate.elongation >= elongationTarget &&
-                    candidate.stressRelaxation <= relaxationLimit &&
-                    costOf(candidate.cost) <= costLimit;
-                  return (
-                    <button
-                      key={candidate.id}
-                      type="button"
-                      className={`candidate-card panel ${selectedId === candidate.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedId(candidate.id)}
-                    >
-                      <span className={`candidate-index ${candidate.color}`}>
-                        {candidate.id.replace('CU-', '')}
-                      </span>
-                      <span className="candidate-body">
-                        <strong>{candidate.name}</strong>
-                        <small>{candidate.summary}</small>
-                        <span className="candidate-spec">
-                          <b>成分</b>{' '}
-                          {candidate.composition
-                            .map((row) => `${row.element} ${row.target}`)
-                            .join(' · ')}
-                        </span>
-                        <span className="candidate-spec">
-                          <b>工艺</b>{' '}
-                          {candidate.processSteps
-                            .map((step) => step.label)
-                            .join(' → ')}
-                        </span>
-                        <span className="candidate-tags">
-                          <em>{candidate.novelty} 新颖性</em>
-                          <em>{candidate.risk}风险</em>
-                          <em>{candidate.cost}</em>
-                          <em className={pass ? 'pass-tag' : 'hold-tag'}>
-                            {pass ? '约束通过' : '待验证'}
-                          </em>
-                        </span>
-                      </span>
-                      <span className="candidate-metric">
-                        <strong>{candidate.strength}</strong>
-                        <small>MPa</small>
-                        <b>{candidate.conductivity}%</b>
-                        <small>IACS</small>
-                        <i>A {candidate.elongation}%</i>
-                      </span>
-                      <ChevronRight size={18} className="candidate-arrow" />
-                    </button>
-                  );
-                })}
               </div>
             </section>
 

@@ -1177,7 +1177,7 @@ h1 {
     grid-template-columns: 285px minmax(0, 1fr);
   }
   .candidate-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .route-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1208,6 +1208,9 @@ h1 {
     position: static;
   }
   .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .candidate-list {
     grid-template-columns: 1fr;
   }
   .recommendation-main {
@@ -1659,7 +1662,8 @@ h3 {
   color: #fff;
 }
 .candidate-section {
-  margin-top: 26px;
+  margin-top: 0;
+  margin-bottom: 18px;
 }
 .section-title-row {
   margin-bottom: 12px;
