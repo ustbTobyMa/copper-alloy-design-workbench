@@ -592,11 +592,12 @@ export default function Home() {
   };
   const stressMax = Math.max(
     1000,
-    Math.ceil((selected.strength * 1.1) / 100) * 100,
+    Math.ceil(Math.max(selected.strength * 1.1, strengthTarget * 1.05) / 100) *
+      100,
   );
   const fractureStrain = selected.elongation;
   const strainMax = Math.max(14, Math.ceil(fractureStrain * 1.12));
-  // 铜合金的工程曲线示意：E≈120 GPa，采用 0.2% 规定塑性延伸强度作为连续屈服标记。
+  // 铜合金的工程曲线示意：E≈120 GPa，用示意屈服应力与屈服应变标记连续屈服过渡。
   const youngsModulus = 120000;
   const proofStress = selected.strength * 0.86;
   const proofStrain = (proofStress / youngsModulus) * 100;
@@ -633,7 +634,10 @@ export default function Home() {
         stress = proofStress + (selected.strength - proofStress) * hardening;
       } else {
         const t = (strain - uniformStrain) / (fractureStrain - uniformStrain);
-        stress = selected.strength - (selected.strength - fractureStress) * t;
+        const neckingProgress = t ** 1.2;
+        stress =
+          selected.strength -
+          (selected.strength - fractureStress) * neckingProgress;
       }
       return `${index === 0 ? 'M' : 'L'} ${stressX(strain).toFixed(1)} ${stressY(stress).toFixed(1)}`;
     })
@@ -1577,7 +1581,7 @@ export default function Home() {
                       <line
                         className="curve-target"
                         x1="38"
-                        x2="382"
+                        x2={fracturePoint.x}
                         y1={164 - (strengthTarget / stressMax) * 134}
                         y2={164 - (strengthTarget / stressMax) * 134}
                       />
@@ -1618,6 +1622,16 @@ export default function Home() {
                         <text x="34" y="28" textAnchor="end">
                           σ / MPa
                         </text>
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <text
+                            key={`stress-label-${index}`}
+                            x="34"
+                            y={164 - index * 33.5 + 3}
+                            textAnchor="end"
+                          >
+                            {Math.round((stressMax * index) / 4)}
+                          </text>
+                        ))}
                         <text x="382" y="182" textAnchor="end">
                           ε / %
                         </text>
