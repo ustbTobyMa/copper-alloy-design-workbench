@@ -29,12 +29,17 @@ jobs:
         run: npm ci
       - name: Build static export
         run: npm run build
+      - name: Prepare project-page paths
+        run: |
+          mkdir -p site
+          cp -R dist/client/. site/
+          find site -type f \( -name '*.html' -o -name '*.json' -o -name '*.js' -o -name '*.css' \) -print0 | xargs -0 sed -i 's|/_next/|/copper-alloy-design-workbench/_next/|g'
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/client
+          path: ./site
 
   deploy:
     environment:
