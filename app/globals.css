@@ -154,6 +154,19 @@ h1 { max-width: 840px; color: var(--ink); font-size: clamp(28px, 3vw, 44px); let
 .route-chip small { margin-top: 6px; color: #8c8f9d; font-size: 9px; }
 .divergence-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 13px; padding-top: 11px; border-top: 1px dashed #dcd9ef; color: #737b90; font-size: 10px; }
 .divergence-footer span { display: inline-flex; align-items: center; gap: 6px; }
+.physics-card { margin-top:13px; padding:21px 22px 18px; border-color:#c7d9d5; background:linear-gradient(110deg,#f3faf8 0%,#fff 68%); }
+.physics-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:16px; }
+.physics-metric { display:grid; gap:3px; min-width:0; padding:11px; background:#fff; border-top:2px solid var(--teal-soft); }
+.physics-metric span { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:9px; }
+.physics-metric span svg { color:var(--teal-soft); }
+.physics-metric strong { overflow:hidden; color:var(--teal); font:600 17px var(--serif); line-height:1.25; text-overflow:ellipsis; white-space:nowrap; }
+.physics-metric small { color:var(--faint); font:8px var(--mono); line-height:1.45; }
+.physics-chain { display:flex; align-items:center; gap:9px; margin-top:13px; padding:10px; color:var(--teal); background:#f8fbf8; border:1px solid var(--line); font-size:10px; }
+.physics-chain span { display:flex; align-items:center; gap:5px; flex:1; min-width:0; white-space:nowrap; }
+.physics-chain b { color:var(--copper); font:500 9px var(--mono); }
+.physics-chain svg { flex:0 0 auto; color:var(--copper); }
+.physics-foot { display:flex; align-items:flex-start; gap:7px; margin-top:12px; color:var(--faint); font-size:9px; line-height:1.5; }
+.physics-foot svg { flex:0 0 auto; color:var(--teal-soft); }
 
 .detail-grid { display:grid; grid-template-columns:1.08fr .92fr; gap:13px; margin-top:17px; }
 .detail-card { min-width:0; padding:21px 22px 18px; }
@@ -211,6 +224,7 @@ h1 { max-width: 840px; color: var(--ink); font-size: clamp(28px, 3vw, 44px); let
   .workspace-grid { grid-template-columns:285px minmax(0,1fr); }
   .candidate-list { grid-template-columns: 1fr; }
   .route-grid { grid-template-columns: repeat(3, 1fr); }
+  .physics-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 780px) {
   .topbar { min-height: 66px; }
@@ -225,6 +239,8 @@ h1 { max-width: 840px; color: var(--ink); font-size: clamp(28px, 3vw, 44px); let
   .route-grid { grid-template-columns: 1fr 1fr; }
   .loop-card { grid-template-columns: auto 1fr; }
   .loop-stats { grid-column: 1 / -1; justify-content: space-between; width: 100%; }
+  .physics-chain { align-items: stretch; flex-direction: column; }
+  .physics-chain svg { transform: rotate(90deg); align-self: center; }
   .footer-bar { flex-direction: column; padding: 14px 22px; }
 }
 @media (max-width: 500px) {
@@ -234,6 +250,7 @@ h1 { max-width: 840px; color: var(--ink); font-size: clamp(28px, 3vw, 44px); let
   .route-grid { grid-template-columns: 1fr; }
   .candidate-card { grid-template-columns: auto minmax(0, 1fr) auto; }
   .candidate-metric { display:none; }
+  .physics-metrics { grid-template-columns: 1fr; }
 }
 
 body { animation: pageIn .55s ease both; }

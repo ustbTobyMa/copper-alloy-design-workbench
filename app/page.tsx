@@ -16,6 +16,10 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Thermometer,
+  Atom,
+  Scale,
+  Workflow,
   Target,
   Zap,
 } from 'lucide-react';
@@ -139,6 +143,19 @@ export default function Home() {
             <section className="candidate-section" aria-labelledby="candidate-heading"><div className="section-title-row"><div><p className="eyebrow">CANDIDATE SET</p><h3 id="candidate-heading">候选方案 <span>03</span></h3></div><span className="candidate-order-note">点击卡片查看细节</span></div><div className="candidate-list">{candidates.map((candidate) => <button key={candidate.id} type="button" className={`candidate-card panel ${selectedId === candidate.id ? 'selected' : ''}`} onClick={() => setSelectedId(candidate.id)}><span className={`candidate-index ${candidate.color}`}>{candidate.id.replace('CU-', '')}</span><span className="candidate-body"><strong>{candidate.name}</strong><small>{candidate.summary}</small><span className="candidate-tags"><em>{candidate.novelty} 新颖性</em><em>{candidate.risk}风险</em><em>{candidate.cost}</em></span></span><span className="candidate-metric"><strong>{candidate.strength}</strong><small>MPa</small><b>{candidate.conductivity}%</b><small>IACS</small></span><ChevronRight size={18} className="candidate-arrow" /></button>)}</div></section>
 
             <section className="divergence-card panel" aria-labelledby="divergence-heading"><div className="card-heading"><div><p className="eyebrow">DIVERGENT DESIGN SPACE</p><h3 id="divergence-heading">发散式路线生成</h3></div><span className="explanation-badge"><Sparkles size={14} /> 10 条候选</span></div><p className="card-description">同一研发目标下，模型从成分、组织、工艺和成本四个方向展开探索，再交给物理模型收敛。</p><div className="route-grid">{routes.map(([number, title, tag, note]) => <div className="route-chip" key={number}><span>{number}</span><strong>{title}</strong><small>{tag} · {note}</small></div>)}</div><div className="divergence-footer"><span><Layers size={15} /> 差异性：成分｜组织｜工艺｜成本</span><span><Activity size={15} /> 输出：新颖性、性能、机理、风险、验证成本</span></div></section>
+
+            <section className="physics-card panel" aria-labelledby="physics-heading">
+              <div className="card-heading"><div><p className="eyebrow">THERMODYNAMIC + PHYSICS LENS</p><h3 id="physics-heading">热力学与物理约束</h3></div><span className="explanation-badge"><ShieldCheck size={14} /> 可解释预测</span></div>
+              <p className="card-description">候选方案先经过相平衡、析出驱动力和工艺窗口筛选，再输出强度、导电率与应力松弛预测，避免只给出“黑箱最优解”。</p>
+              <div className="physics-metrics">
+                <div className="physics-metric"><span><Atom size={15} /> 稳定基体相</span><strong>FCC-Cu</strong><small>α-Cu 基体 · 单相稳定区</small></div>
+                <div className="physics-metric"><span><Sparkles size={15} /> 析出驱动力</span><strong>0.78</strong><small>相对驱动力指数 · 450°C</small></div>
+                <div className="physics-metric"><span><Thermometer size={15} /> 时效窗口</span><strong>420–480°C</strong><small>细小弥散析出相形成区间</small></div>
+                <div className="physics-metric"><span><Scale size={15} /> 性能权衡</span><strong>强度 / 导电率</strong><small>Pareto 前沿 · 3 个可制造解</small></div>
+              </div>
+              <div className="physics-chain"><span><b>01</b>CALPHAD 相区计算</span><ChevronRight size={15} /><span><b>02</b>析出动力学筛选</span><ChevronRight size={15} /><span><b>03</b>有限元 / 经验模型</span><ChevronRight size={15} /><span><b>04</b>实验结果回流</span></div>
+              <div className="physics-foot"><Workflow size={15} /><span>物理筛选将 10 条发散路线收敛为 3 条优先验证路线；参数为演示接口，可替换为你们的 CALPHAD、DFT 和实验数据库。</span></div>
+            </section>
 
             <div className="detail-grid"><section className="detail-card panel" aria-labelledby="composition-heading"><div className="card-heading"><div><p className="eyebrow">03 / COMPOSITION WINDOW</p><h3 id="composition-heading">成分窗口</h3></div><span className="unit-label">mass %</span></div><p className="card-description">目标值用于当前候选方案的推荐点，上下限代表模型建议的可探索区间。</p><div className="composition-table-wrap"><table className="composition-table"><thead><tr><th>元素</th><th>下限</th><th>目标</th><th>上限</th><th>局部响应</th></tr></thead><tbody>{compositionRows.map((row) => <tr key={row[0]}>{row.map((cell, index) => <td key={`${row[0]}-${index}`} className={index === 2 ? 'target-cell' : ''}>{cell}</td>)}</tr>)}</tbody></table></div><div className="table-note"><span className="range-legend"><i /> 推荐窗口</span><span>其他元素与工艺条件保持不变</span></div></section>
               <section className="detail-card panel" aria-labelledby="performance-heading"><div className="card-heading"><div><p className="eyebrow">04 / PERFORMANCE BALANCE</p><h3 id="performance-heading">性能预测</h3></div><span className="unit-label">预测值 / 目标</span></div><div className="prediction-grid"><div className="prediction-metric"><span><Gauge size={17} /> 抗拉强度</span><strong>{selected.strength} <small>/ {strengthTarget} MPa</small></strong><i style={{ width: `${Math.min(100, (selected.strength / 1000) * 100)}%` }} /></div><div className="prediction-metric"><span><Zap size={17} /> 导电率</span><strong>{selected.conductivity} <small>/ {conductivityTarget}% IACS</small></strong><i className="teal-bar" style={{ width: `${Math.min(100, selected.conductivity * 1.5)}%` }} /></div><div className="prediction-metric"><span><RefreshCw size={17} /> 应力松弛</span><strong>{100 - selected.relaxation}% <small>/ 目标 ≤ 8%</small></strong><i className="green-bar" style={{ width: `${selected.relaxation}%` }} /></div></div><div className="prediction-callout"><Sparkles size={16} /><span>Cu 基体与 {family} 析出相协同，预计在导电率和强度之间取得平衡。</span></div></section></div>
